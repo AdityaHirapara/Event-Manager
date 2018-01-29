@@ -1,0 +1,99 @@
+    
+<div class="main-body">
+	<div class="header" id="header">
+		<div>
+			<h1>Event Manager</h1>
+		</div>
+	</div>
+	<div class="flexed">
+		<div class="page">
+			<div>
+				<div class="tab" style="float: right;" onclick="navigation()"><i class="fa fa-bars"></i></div>
+				<div class="button" style="float: right;" onclick="openModal('work')">
+					Add Work
+				</div>
+				<div><h2 style="text-transform:uppercase;">{{committeeName}}</h2></div>
+			</div>
+
+			<div id="navmenu" class="menu">
+				<a href="/logout">
+					<div class="menu-ele">
+						Logout
+					</div>
+				</a>
+			</div>
+
+			<div class="navbar">
+				<a href="/committee/{{committeeName}}">
+					<div class="navtab">
+						Your Work
+					</div>
+				</a>
+				<div class="navtab active">
+					Current Work
+				</div>
+				<a href="/committee/{{committeeName}}/closedWork">
+					<div class="navtab">
+						Closed Work
+					</div>
+				</a>
+			</div>
+
+			<div class="list">
+				<!--works-->
+				{{#if works}}
+					{{#each works}}
+						<div class="list-ele full" onclick="extend('{{heading}}')">
+							<h4>{{heading}}</h4>
+							{{description}}
+						
+						<div id="{{heading}}" class="ext">
+							assignee : {{assignee}}<br>
+							created on {{created}}
+							<div class="flexed">
+								<div class="button">
+									Propose Completed!
+								</div>
+								<div class="button">
+									I can't do it!
+								</div>
+							</div>
+						</div>
+
+					</div>
+					{{/each}}
+				{{else}}
+					<div style="height: 60%;padding-top: 27%;">
+						No work is added yet.
+					</div>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal" id="work">
+	<div class="modal-content">
+		<button style="position: absolute;top: 5px;right: 5px;font-size: 25px;border: 0" onclick="closeModal('work')">&times;</button>
+		<div class="modal-header">
+			<h2>Add work</h2>
+		</div>
+		<div class="modal-body">
+			<form method="post" action="/addWork">
+			    <label for="committee">Committee Name</label><br>
+			    <input type="text"  name="committee" value={{committeeName}}><br><br>
+				<label for="work">Work Name</label><br>
+				<input type="text" name="work"><br><br>
+				<label for="assignee">Name</label><br><br>
+				<input type="text" name="assignee"><br><br>
+				<label for ="description">Description</label>
+				<input type="text" name="description"><br><br> 
+				<label for ="difficulty">Difficulty</label><br>
+				<input type="text" name="difficulty"><br><br>
+				<label for="date">Date</label><br>
+				<input type="date" name="date"><br><br>
+				<input type="submit" name="Add" value="Add" class="button"><br><br>
+			</form>
+		</div>
+	</div>
+</div>
