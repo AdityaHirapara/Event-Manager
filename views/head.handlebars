@@ -1,82 +1,95 @@
 <div class="main-body">
-		<div class="header" id="header">
+	<div class="header" id="header">
+		<div>
+			<h1>
+				Event Manager
+			</h1>
+		</div>
+	</div>
+	<div class="flexed">
+		<div class="page">
 			<div>
-				<h1>
-					Event Manager
-				</h1>
+				<div class="tab" style="float: right;" onclick="navigation()"><i class="fa fa-bars"></i></div>
+				<div class="button" style="float: right;" onclick="openModal('committee')">
+					Add Committee
+				</div>
+				<div><h1>{{eventName}}</h1></div>
+				
 			</div>
-		</div>
-		<div class="flexed">
-			<div class="page">
-				<div>
-					<div class="tab" style="float: right;" onclick="navigation()"><i class="fa fa-bars"></i></div>
-					<div class="button" style="float: right;" onclick="openModal('committee')">
-						Add Committee
+			<div id="navmenu" class="menu">
+				<div class="menu-ele" onclick="openModal('invite')">
+					Invite Member
+				</div>
+				<a href="/logout">
+					<div class="menu-ele">
+						Logout
 					</div>
-					<div><h1>{{eventName}}</h1></div>
-					
-				</div>
-				<div id="navmenu" class="menu">
-					<div class="menu-ele" onclick="openModal('invite')">
-						Invite Member
+				</a>
+			</div>
+				
+			<div class="list">
+				<!--committee-->
+				{{#if committee}}
+					{{#each committee}}
+						<a href="/committee/{{name}}">
+							<div class="list-ele">
+								<h4>{{name}}</h4>
+							</div>
+						</a>
+					{{/each}}
+				{{else}}
+					<div style="height: 60%;padding-top: 27%;text-align: center;">
+						No committee is added yet.
 					</div>
-					<a href="/logout">
-						<div class="menu-ele">
-							Logout
-						</div>
-					</a>
-				</div>
-					
-				<div class="list">
-					<!--committee-->
-					{{#if committee}}
-						{{#each committee}}
-							<a href="/committee/{{name}}">
-								<div class="list-ele">
-									<h4>{{name}}</h4>
-								</div>
-							</a>
-						{{/each}}
-					{{else}}
-						<div style="height: 60%;padding-top: 27%;text-align: center;">
-							No committee is added yet.
-						</div>
-					{{/if}}
-				</div>
+				{{/if}}
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="modal" id="committee">
-		<div class="modal-content">
-			<div class="close" onclick="closeModal('committee')">&times;</div>
-			<div class="modal-header">
-				<h2>Add Committee</h2>
-			</div>
-			<div class="modal-body">
-				<form method="post" action="/addCommittee">
-					<label for="committee">Committee Name</label><br>
-					<input type="text" name="committee"><br><br>
-					<input type="submit" name="Add" value="Add" class="button"><br><br>
-				</form>
-			</div>
+<div class="modal" id="committee">
+	<div class="modal-content">
+		<div class="close" onclick="closeModal('committee')">&times;</div>
+		<div class="modal-header">
+			<h2>Add Committee</h2>
+		</div>
+		<div class="modal-body">
+			<form method="post" action="/addCommittee">
+				<label for="committee">Committee Name</label><br>
+				<input type="text" name="committee" id="committeeIn" autocomplete="off" required><br><p class="warning" id="committeeWar"></p><br>
+				<input type="submit" name="Add" value="Add" class="button"><br><br>
+			</form>
 		</div>
 	</div>
+</div>
 
-	<div class="modal" id="invite">
-		<div class="modal-content">
-			<div class="close" onclick="closeModal('invite')">&times;</div>
-			<div class="modal-header">
-				<h2>Invite Member</h2>
-			</div>
-			<div class="modal-body">
-				<form method="post" action="/invite">
-					<label for="email">Member's Email</label><br>
-					<input type="email" name="email"><br><br>
-					<label for="committee">Committee Name</label><br>
-					<input type="text" name="committee"><br><br>
-					<input type="submit" name="Invite" value="Invite" class="button"><br><br>
-				</form>
-			</div>
+<div class="modal" id="invite">
+	<div class="modal-content">
+		<div class="close" onclick="closeModal('invite')">&times;</div>
+		<div class="modal-header">
+			<h2>Invite Member</h2>
+		</div>
+		<div class="modal-body">
+			<form method="post" action="/invite">
+				<label for="email">Member's Email</label><br>
+				<input type="email" name="email"><br><br>
+				<label for="committee">Committee Name</label><br>
+				<input type="text" name="committee"><br><br>
+				<input type="submit" name="Invite" value="Invite" class="button"><br><br>
+			</form>
 		</div>
 	</div>
+</div>
+<script>
+    var committeeIn = document.getElementById('committeeIn');
+    committeeIn.addEventListener("keyup",(event) => {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("committeeWar").innerHTML = this.responseText;
+            }
+        };
+        xhttp.open("GET", "/committeeName/?u="+committeeIn.value+"&e={{eventName}}", true);
+        xhttp.send();
+    });
+</script>

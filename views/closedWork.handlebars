@@ -9,9 +9,11 @@
 		<div class="page">
 			<div>
 				<div class="tab" style="float: right;" onclick="navigation()"><i class="fa fa-bars"></i></div>
-				<div class="button" style="float: right;" onclick="openModal('work')">
-					Add Work
-				</div>
+				{{#headVal committee 'head'}}
+						<div class="button" style="float: right;" onclick="openModal('work')">
+							Add Work
+						</div>
+				{{/headVal}}
 				<div><h2 style="text-transform:uppercase;">{{committeeName}}</h2></div>
 			</div>
 
@@ -54,7 +56,7 @@
 					</div>
 					{{/each}}
 				{{else}}
-					<div style="height: 60%;padding-top: 27%;">
+					<div style="height: 60%;padding-top: 27%;text-align: center;">
 						No work is added yet.
 					</div>
 				{{/if}}

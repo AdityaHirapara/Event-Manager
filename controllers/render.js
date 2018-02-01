@@ -3,7 +3,7 @@ const con = require('../config');
 exports.head = function(req,res){
 	if(req.session && req.session.user && req.session.user.committee=='head'){
 		let tName = req.session.user.event + '_committee';
-		let que = `SELECT commitee_name AS name FROM ${tName}`;
+		let que = `SELECT committee_name AS name FROM ${tName}`;
 
 		con.query(que,(err,results,fields) => {
 			if(err){
@@ -11,8 +11,8 @@ exports.head = function(req,res){
 			}
 			let committee = results;
 			res.render('head',{
-				eventName : req.session.user.event,
-				committee : committee
+				eventName: req.session.user.event,
+				committee: committee
 			});
 		});
 	}
@@ -27,8 +27,8 @@ exports.signup = function(req,res){
 		let event = req.query.q1;
 		let committee = req.query.q2;
 		res.render('signup',{
-			event : event,
-			committee : committee
+			event: event,
+			committee: committee
 		});
 	}
 	else{
@@ -44,8 +44,9 @@ exports.yourWork = function(req,res){
 		if(err)
 		throw err;
 		res.render('yourWork',{
-			committeeName:committee,
-			committee:req.session.user.committee,
+			event: req.session.user.event,
+			committeeName: committee,
+			committee: req.session.user.committee,
 			works: results
 		});
 	});
@@ -60,9 +61,11 @@ exports.allWork = function(req,res){
 		if(err)
 		throw err;
 		res.render('allWork',{
-			committeeName:committee,
-			committee:req.session.user.committee,
-			works: results
+			event: req.session.user.event,
+			committeeName: committee,
+			committee: req.session.user.committee,
+			works: results,
+			currentUser: req.session.user.name.toLowerCase()  //-------Remember to CHANGE---------//
 		});
 	});
 }
@@ -76,8 +79,9 @@ exports.closedWork = function(req,res){
 		if(err)
 		throw err;
 		res.render('closedWork',{
-			committeeName:committee,
-			committee:req.session.user.committee,
+			event: req.session.user.event,
+			committeeName: committee,
+			committee: req.session.user.committee,
 			works: results
 		});
 	});

@@ -1,8 +1,8 @@
 
-exports.headVal = function(conditional, options) {
-  if (options.hash.desired === options.hash.type) {
-    options.fn(this);
+exports.headVal = function(lvalue,rvalue, options) {
+  if (lvalue == rvalue) {
+    return options.fn(this);
   } else {
-    options.inverse(this);
+    return options.inverse(this);
   }
 }

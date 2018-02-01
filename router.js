@@ -42,6 +42,12 @@ appRouter.post('/new',Authentication.create);
 appRouter.post('/signup',Authentication.signup);
 appRouter.post('/login',Authentication.login);
 appRouter.post('/addCommittee',Committee.add);
+appRouter.post('/addWork',Committee.addwork);
+appRouter.get('/eventName',Authentication.eventVal);
+appRouter.get('/userName',Authentication.userVal);
+appRouter.get('/committeeName',Authentication.committeeVal);
+appRouter.post('/propose',Committee.propose);
+appRouter.post('/close',Committee.close);
 
 appRouter.use('/committee',committeeRouter);
 committeeRouter.use(express.static(__dirname + '/public'));

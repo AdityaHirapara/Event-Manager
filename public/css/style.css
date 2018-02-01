@@ -202,6 +202,10 @@ a{
   color: #1e83e2;
 }
 
+.warning{
+  color: red;
+}
+
 /*modal*/
 .close{
   position: absolute;
@@ -223,12 +227,13 @@ a{
 .modal-content{
   width: 40%;
   min-height: 300px;
+  max-height: 500px;
   box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); 
   background-color:rgba(67, 68, 70,0.9);
   color: white;
   padding:10px;
   position:fixed;
-  overflow:scroll; 
+  overflow-y:scroll; 
   top:25%;
   left:30%;
   animation:zoom 0.5s;
@@ -276,6 +281,9 @@ a{
 
 @media only screen and (max-width: 1050px){
   .modal-content{width: 94%;left:3%;animation:zoomOne 0.5s;}
+  .page{width: 95%;margin: 0 2.5%;}
+  .navbar{width: 95%;}
+  .navtab{padding: 5px;}
 }
 
 .ext{
