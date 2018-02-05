@@ -3,8 +3,7 @@
     <div class="form-container">
         <form action="/signup" method="post">
             <h1>SignUp</h1>
-            <label for="event">Event Name</label><br>
-            <input type="text" name="event" id="eventIn" readonly value={{event}}><br><br>
+            <input type="hidden" name="event" id="eventIn" readonly value={{event}}>
             <label for="name">User Name</label><br>
             <input type="text" name="name" id="userIn" autocomplete="off" required><br><p class="warning" id="userWar"></p><br>
             <label for="email">Email</label><br>
@@ -13,9 +12,8 @@
             <input type="password" name="pass" required><br><br>
             <label for="mobile">Mobile Number</label><br>
             <input type="text" name="mobile" required><br><br>
-            <label for="committee">Committee</label><br>
-            <input type="text" name="committee" readonly value="{{committee}}"><br><br>
-            <input type="submit" name="submit" value="Signup" style="max-width:90px;font-size: 100%;" class="button">
+            <input type="hidden" name="committee" readonly value="{{committee}}">
+            <input type="submit" name="submit" value="Signup" id="submit" style="max-width:90px;font-size: 100%;" class="button">
         </form>
     </div>
 </div>
@@ -27,6 +25,9 @@
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 document.getElementById("userWar").innerHTML = this.responseText;
+                if(this.responseText!=''){
+                    document.getElementById('submit').disabled = true;
+                }
             }
         };
         xhttp.open("GET", "/userName/?u="+userIn.value+"&e="+eventIn.value, true);

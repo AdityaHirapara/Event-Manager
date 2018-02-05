@@ -24,6 +24,15 @@ var hbs = exphbs.create({
 app.engine('handlebars',hbs.engine);
 app.set('view engine', 'handlebars');
 
+app.use(function(req, res, next) {
+    if (!req.user) {
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
+    }
+    next();
+});
+
 app.use('/',router);
 
 app.listen(3000,function() {

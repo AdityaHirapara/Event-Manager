@@ -6,3 +6,10 @@ exports.headVal = function(lvalue,rvalue, options) {
     return options.inverse(this);
   }
 }
+
+exports.plus = function(lvalue, rvalue) {
+    lvalue = parseFloat(lvalue);
+    rvalue = parseFloat(rvalue);
+        
+    return lvalue + rvalue;
+}

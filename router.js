@@ -13,24 +13,14 @@ appRouter.get('/create',(req,res) => {
 	res.render('create');
 });
 appRouter.get('/signup',Render.signup);
-appRouter.get('/login',(req,res)=>{
-	res.render('login');
-});
+appRouter.get('/login',Render.login);
 
 appRouter.get('/logout',Authentication.logout);
 
 appRouter.get('/main',Render.head);
 appRouter.get('/log',(req,res) => {
-	if(req.session && req.session.user){
-		console.log(req.session.user);
-	    res.render('head',{
-			eventName : req.session.user.event
-		});
-	}
-	else{
-		req.session.reset();
-		res.redirect('/main');
-	}
+	
+	res.redirect('/');
 });
 // appRouter.get('/:name',(req,res) => {
 // 	console.log(req.params.name);
@@ -45,17 +35,33 @@ appRouter.post('/addCommittee',Committee.add);
 appRouter.post('/addWork',Committee.addwork);
 appRouter.get('/eventName',Authentication.eventVal);
 appRouter.get('/userName',Authentication.userVal);
+appRouter.get('/search',Authentication.assignee);
 appRouter.get('/committeeName',Authentication.committeeVal);
+appRouter.get('/:leaderboard',Render.leaderboard);
 appRouter.post('/propose',Committee.propose);
 appRouter.post('/close',Committee.close);
+appRouter.post('/delete',Committee.deleteWork);
 
 appRouter.use('/committee',committeeRouter);
 committeeRouter.use(express.static(__dirname + '/public'));
-committeeRouter.get('/:name',Render.yourWork);
+committeeRouter.get('/:name',(req,res) =>{
+	if(req.session && req.session.user){
+		if(req.session.user.committee == 'head'){
+			res.redirect('/committee/' + req.params.name + '/allWork');
+		}
+		else{
+			Render.yourWork(req,res);
+		}
+	}
+	else{
+		res.redirect('/');
+	}
+});
 
 committeeRouter.use('/:name',workRouter);
 workRouter.use(express.static(__dirname + '/public'));
 workRouter.get('/allWork',Render.allWork);
 workRouter.get('/closedWork',Render.closedWork);
+workRouter.get('/proposedWork',Render.proposedWork);
 
 module.exports = appRouter;

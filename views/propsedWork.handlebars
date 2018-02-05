@@ -1,4 +1,3 @@
-    
 <div class="main-body">
 	<div class="header" id="header">
 		<div>
@@ -9,22 +8,18 @@
 		<div class="page">
 			<div>
 				<div class="tab" style="float: right;" onclick="navigation()"><i class="fa fa-bars"></i></div>
-				{{#headVal committee 'head'}}
-						<div class="button" style="float: right;" onclick="openModal('work')">
-							Add Work
-						</div>
-				{{/headVal}}
+				<div class="button" style="float: right;" onclick="openModal('work')">
+					Add Work
+				</div>
 				<div><h2 style="text-transform:uppercase;">{{committeeName}}</h2></div>
 			</div>
 
 			<div id="navmenu" class="menu">
-				{{#headVal committee 'head'}}
-					<a href="/main">
-						<div class="menu-ele">
-							Home
-						</div>
-					</a>
-				{{/headVal}}
+				<a href="/main">
+					<div class="menu-ele">
+						Home
+					</div>
+				</a>
 				<a href="/logout">
 					<div class="menu-ele">
 						Logout
@@ -33,9 +28,9 @@
 			</div>
 
 			<div class="navbar">
-					<div class="navtab active">
-						Your Work
-					</div>
+				<div class="navtab active">
+					Requests
+				</div>
 				<a href="/committee/{{committeeName}}/allWork">
 					<div class="navtab">
 						Current Work
@@ -61,17 +56,24 @@
 						<div id="{{heading}}" class="ext">
 							assignee : {{assignee}}<br>
 							created on {{created}}
-							{{#headVal proposed 0}}
-								{{#headVal complete 0}}
-									<form method="post" action="/propose">
-										<input type="hidden" name="event" value="{{../event}}" readonly>
-										<input type="hidden" name="committee" value="{{../committeeName}}" readonly>
-										<input type="hidden" name="work" value="{{heading}}" readonly>
-										<input type="submit" name="propose" value="Propose Completed!" style="max-width:55%;font-size: 100%;" class="button">
-										<input type="submit" name="cant" value="I can't do it!" style="width:35%;font-size: 100%;" class="button"><br>
-									</form>
+							<form method="post" action="/close">
+								<input type="hidden" name="committee" value="{{../committeeName}}" readonly>
+								<input type="hidden" name="work" value="{{heading}}" readonly>
+								{{#headVal proposed -1}}
+									<p>This work is requested to assign other member by {{assignee}}.</p>
+									<label for="assignee">Give it to</label>
+									<div>
+										<input type="text" name="assignee" id="assigneeIn" style="max-width:50%;" autocomplete="off">
+										<div id="search-list">
+										</div>
+									</div>
+									<input type="submit" name="change" value="Change Assignee" id="assign" disabled class="button" style="max-width:170px;font-size: 100%;">
 								{{/headVal}}
-							{{/headVal}}
+								{{#headVal proposed 1}}
+									<p>This work is completed by {{assignee}}.</p>
+									<input type="submit" name="close" value="Close Work" class="button" style="width:170px;font-size: 100%;">
+								{{/headVal}}
+							</form>
 						</div>
 					</div>
 					<hr>
@@ -101,12 +103,40 @@
 				<label for="assignee">Name</label><br><br>
 				<input type="text" name="assignee"><br><br>
 				<label for ="description">Description</label>
-				<input type="text" name="description"><br><br> 
+				<input type="text" name="description"><br><br>
 				<label for ="difficulty">Difficulty</label><br>
 				<input type="text" name="difficulty"><br><br>
-				
+				<label for="date">Date</label><br>
+				<input type="date" name="date"><br><br>
 				<input type="submit" name="Add" value="Add" class="button"><br><br>
 			</form>
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	var assigneeIn = document.getElementById('assigneeIn');
+	assigneeIn.addEventListener("keyup",(event) => {
+		document.getElementById('search-list').style.display = 'block';
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+	    	if (this.readyState == 4 && this.status == 200) {
+	    		let sarr = JSON.parse(this.response);
+	    		let list = document.getElementById('search-list');
+	    		sarr = sarr.map((x) => {
+	    			return `<div id="${x}" onclick="select('${x}')">${x}</div>`;
+	    		});
+	    		list.innerHTML = sarr.join('');
+	    	}
+		};
+		xhttp.open("GET", "/search/?a=" + assigneeIn.value + "&c=" + '{{committeeName}}', true);
+	  	xhttp.send();
+	});
+
+	function select(id){
+		let value = document.getElementById(id).innerHTML;
+		document.getElementById('assigneeIn').value = value;
+		document.getElementById('search-list').style.display = 'none';
+		document.getElementById('assign').disabled = false;
+	}
+</script>

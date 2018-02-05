@@ -8,6 +8,9 @@
 		<div class="form-container">
 			<form action="/login" method="post">
                 <h1>Login</h1>
+                {{#if err}}
+                    <p class="warning">{{err}}</p>
+                {{/if}}
                 <label for="event">Event Name</label><br>
                 <input type="text" name="event" required><br><br>
                 <label for="email">Email</label><br>

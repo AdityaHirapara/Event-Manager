@@ -18,6 +18,13 @@
 			</div>
 
 			<div id="navmenu" class="menu">
+				{{#headVal committee 'head'}}
+					<a href="/main">
+						<div class="menu-ele">
+							Home
+						</div>
+					</a>
+				{{/headVal}}
 				<a href="/logout">
 					<div class="menu-ele">
 						Logout
@@ -26,11 +33,20 @@
 			</div>
 
 			<div class="navbar">
-				<a href="/committee/{{committeeName}}">
-					<div class="navtab">
-						Your Work
-					</div>
-				</a>
+				{{#headVal committee committeeName}}
+					<a href="/committee/{{committeeName}}">
+						<div class="navtab">
+							Your Work
+						</div>
+					</a>
+				{{/headVal}}
+				{{#headVal committee 'head'}}
+					<a href="/committee/{{committeeName}}/proposedWork">
+						<div class="navtab">
+							Requests
+						</div>
+					</a>
+				{{/headVal}}
 				<a href="/committee/{{committeeName}}/allWork">
 					<div class="navtab">
 						Current Work
@@ -45,15 +61,19 @@
 			<div class="list">
 				<!--works-->
 				{{#if works}}
+					<hr>
 					{{#each works}}
-						<div class="list-ele full" onclick="extend('{{heading}}')">
-							<h4>{{heading}}</h4>
-							<p>{{description}}</p>
+						<div class="list-ele full">
+							<div class="arrow" onclick="extend('{{heading}}','arrow-{{heading}}')"><i id="arrow-{{heading}}" class="fas fa-angle-down"></i></div>
+							<h3>{{heading}}</h3>
+							{{description}}
+						
 						<div id="{{heading}}" class="ext">
 							assignee : {{assignee}}<br>
 							created on {{created}}
 						</div>
 					</div>
+					<hr>
 					{{/each}}
 				{{else}}
 					<div style="height: 60%;padding-top: 27%;text-align: center;">

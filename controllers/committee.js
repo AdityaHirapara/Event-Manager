@@ -5,16 +5,7 @@ const mailer = require('nodemailer');
 exports.add = function(req,res){
 	const committee = req.body.committee;
 	const tName = req.session.user.event + '_committee';
-	const tName2 = req.session.user.event + '_' + committee + '_work';
-	console.log("add"+req.session.user + " " +tName2);
-	let que = `INSERT INTO ${tName} (committee_name,work) VALUES('${committee}','${tName2}')`;
-	con.query(que,(qerr,qres) => {
-		if(qerr){
-			throw(qerr);
-		}
-	});
-
-	que = `CREATE TABLE ${tName2}(heading varchar(100) NOT NULL UNIQUE,description varchar(200),assignee varchar(30),difficulty varchar(10) NOT NULL,created DATE,complete boolean NOT NULL DEFAULT 0,proposed INT(2) NOT NULL DEFAULT 0)`;
+	let que = `INSERT INTO ${tName} (committee_name) VALUES('${committee}')`;
 	con.query(que,(qerr,qres) => {
 		if(qerr){
 			throw(qerr);
@@ -60,15 +51,15 @@ exports.addwork = function(req,res){
 	const assignee_name = req.body.assignee;
 	const description = req.body.description;
 	const difficulty = req.body.difficulty;
-	const tName2 = req.session.user.event + '_' + committee + '_work';
+	const tName2 = req.session.user.event + '_work';
     // console.log("the value id"+tName2);
-	let que = `INSERT INTO ${tName2}(heading,description,assignee,difficulty,created) VALUES('${work}',"${description}",'${assignee_name}','${difficulty}',CURDATE())`;
+	let que = `INSERT INTO ${tName2}(heading,description,committee,assignee,difficulty,created) VALUES('${work}',"${description}",'${committee}','${assignee_name}','${difficulty}',CURDATE())`;
 	con.query(que,(qerr,qres)=>{
 		if(qerr)
 		console.log(qerr);
 
 	}); 
-    res.redirect('/committee/'+committee);
+    res.redirect('/committee/'+committee+'/allWork');
 }
 
 exports.propose = function(req,res){
@@ -76,7 +67,7 @@ exports.propose = function(req,res){
 	const work = req.body.work;
 	const event = req.body.event;
 	if(req.body.propose){
-		let que = `UPDATE ${event}_${committee}_work SET proposed = 1 WHERE heading = '${work}'`;
+		let que = `UPDATE ${event}_work SET proposed = 1 WHERE heading = '${work}' AND committee = '${committee}'`;
 		con.query(que,(qerr,qres)=>{
 			if(qerr)
 				console.log(qerr);
@@ -84,7 +75,7 @@ exports.propose = function(req,res){
 		});
 	}
 	else if(req.body.cant){
-		let que = `UPDATE ${event}_${committee}_work SET proposed = -1 WHERE heading = '${work}'`;
+		let que = `UPDATE ${event}_work SET proposed = -1 WHERE heading = '${work}' AND committee = '${committee}'`;
 		con.query(que,(qerr,qres)=>{
 			if(qerr)
 				console.log(qerr);
@@ -96,9 +87,9 @@ exports.propose = function(req,res){
 exports.close = function(req,res){
 	const committee = req.body.committee;
 	const work = req.body.work;
-	const event = req.body.event;
+	const event = req.session.user.event;
 	if(req.body.close){
-		let que = `SELECT assignee,difficulty FROM ${event}_${committee}_work WHERE heading = '${work}'`;
+		let que = `SELECT assignee,difficulty FROM ${event}_work WHERE heading = '${work}' AND committee = '${committee}'`;
 		let que1 = '';
 		con.query(que,(err,results,fields)=>{
 			if(err)
@@ -114,20 +105,32 @@ exports.close = function(req,res){
 					console.log(qerr);
 			});
 		});
-		que = `UPDATE ${event}_${committee}_work SET complete = 1 WHERE heading = '${work}'`;
+		que = `UPDATE ${event}_work SET complete = 1,proposed=0 WHERE heading = '${work}' AND committee = '${committee}'`;
 		con.query(que,(qerr,qres)=>{
 			if(qerr)
 				console.log(qerr);
-			res.redirect('/committee/'+committee);
+			res.redirect('/committee/'+committee+'/proposedWork');
 		});
 	}
 	else if(req.body.change){
 		const assignee = req.body.assignee;
-		que = `UPDATE ${event}_${committee}_work SET assignee = '${assignee}' WHERE heading = '${work}'`;
+		que = `UPDATE ${event}_work SET assignee = '${assignee}',proposed=0 WHERE heading = '${work}' AND committee = '${committee}'`;
 		con.query(que,(qerr,qres)=>{
 			if(qerr)
 				console.log(qerr);
-			res.redirect('/committee/'+committee);
+			res.redirect('/committee/'+committee+'/proposedWork');
 		});
 	}
+}
+
+exports.deleteWork = function(req,res){
+	const committee = req.body.committee;
+	const work = req.body.work;
+	const event = req.session.user.event;
+	que = `DELETE FROM ${event}_work WHERE heading = '${work}' AND committee = '${committee}'`;
+	con.query(que,(qerr,qres)=>{
+		if(qerr)
+			console.log(qerr);
+		res.redirect('/committee/'+committee+'/allWork');
+	});
 }

@@ -21,7 +21,13 @@ exports.create = function (req,res) {
 			console.log(qerr);
 		}
 	});
-	que = `CREATE TABLE ${event1}(committee_name varchar(20) NOT NULL ,work varchar(100) NOT NULL)`;
+	que = `CREATE TABLE ${event1}(committee_name varchar(20) NOT NULL)`;
+	con.query(que,function(qerr,qres){
+		if(qerr){
+			console.log(qerr);
+		}
+	});
+	que = `CREATE TABLE ${event}_work(heading varchar(100) NOT NULL UNIQUE,description varchar(200),committee varchar(20) NOT NULL ,assignee varchar(30),difficulty varchar(10) NOT NULL,created DATE,complete boolean NOT NULL DEFAULT 0,proposed INT(2) NOT NULL DEFAULT 0)`;
 	con.query(que,function(qerr,qres){
 		if(qerr){
 			console.log(qerr);
@@ -52,7 +58,7 @@ exports.create = function (req,res) {
 			});
 		});
 	});     
-	console.log("success!!");
+	//console.log("success!!");
 }
 exports.signup = function(req,res){
 	const event = req.body.event;
@@ -123,18 +129,12 @@ exports.login = function(req,res){
 					}
 				}
 				else{
-					res.send({
-						"code":204,
-						"success":"Email and password does not match"
-					});
+					res.redirect('/login?err=Enter valid Password');
 				}
 			});
 		}
 		else{
-			res.send({
-			  "code":204,
-			  "success":"Email does not exits"
-			});
+			res.redirect('/login?err=Enter valid Email');
 		}
 	}
 	console.log("Success");
@@ -208,5 +208,18 @@ exports.committeeVal = function(req,res){
 		else{
 			res.send();
 		}
+	});
+}
+
+exports.assignee = function(req,res){
+	let que = `select name from ${req.session.user.event} where committee='${req.query.c}' AND name like '${req.query.a}%'`;
+	con.query(que,function(err,results,fields){
+		if(err){
+			console.log(err);
+		}
+		let response = results.map((x) => {
+			return x.name;
+		});
+		res.send(response);
 	});
 }
