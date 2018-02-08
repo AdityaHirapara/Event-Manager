@@ -8,9 +8,11 @@
 		<div class="page">
 			<div>
 				<div class="tab" style="float: right;" onclick="navigation()"><i class="fa fa-bars"></i></div>
-				<div class="button" style="float: right;" onclick="openModal('work')">
-					Add Work
-				</div>
+				<a href="/add/{{committeeName}}">
+					<div class="button" style="float: right;">
+						Add Work
+					</div>
+				</a>
 				<div><h2 style="text-transform:uppercase;">{{committeeName}}</h2></div>
 			</div>
 
@@ -18,6 +20,16 @@
 				<a href="/main">
 					<div class="menu-ele">
 						Home
+					</div>
+				</a>
+				<a href="/profile/{{currentUser}}">
+					<div class="menu-ele">
+						Your Profile
+					</div>
+				</a>
+				<a href="/leaderboard/{{committeeName}}">
+					<div class="menu-ele">
+						Leaderboard
 					</div>
 				</a>
 				<a href="/logout">
@@ -54,8 +66,9 @@
 							{{description}}
 						
 						<div id="{{heading}}" class="ext">
-							assignee : {{assignee}}<br>
-							created on {{created}}
+							Assignee : <a href="/profile/{{assignee}}" style="text-decoration: underline;">{{assignee}}</a><br>
+							assigned {{duration}} ago<br>
+							Difficulty : {{difficulty}}
 							<form method="post" action="/close">
 								<input type="hidden" name="committee" value="{{../committeeName}}" readonly>
 								<input type="hidden" name="work" value="{{heading}}" readonly>
@@ -71,7 +84,10 @@
 								{{/headVal}}
 								{{#headVal proposed 1}}
 									<p>This work is completed by {{assignee}}.</p>
-									<input type="submit" name="close" value="Close Work" class="button" style="width:170px;font-size: 100%;">
+									<div style="display:flex">
+										<input type="submit" name="close" value="Close Work" class="button" style="width:170px;font-size: 100%;">
+										<input type="submit" name="reopen" value="Re-open Work" class="button" style="width:170px;font-size: 100%;">
+									</div>
 								{{/headVal}}
 							</form>
 						</div>
@@ -84,32 +100,6 @@
 					</div>
 				{{/if}}
 			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal" id="work">
-	<div class="modal-content">
-		<button style="position: absolute;top: 5px;right: 5px;font-size: 25px;border: 0" onclick="closeModal('work')">&times;</button>
-		<div class="modal-header">
-			<h2>Add work</h2>
-		</div>
-		<div class="modal-body">
-			<form method="post" action="/addWork">
-			    <label for="committee">Committee Name</label><br>
-			    <input type="text"  name="committee" value={{committeeName}}><br><br>
-				<label for="work">Work Name</label><br>
-				<input type="text" name="work"><br><br>
-				<label for="assignee">Name</label><br><br>
-				<input type="text" name="assignee"><br><br>
-				<label for ="description">Description</label>
-				<input type="text" name="description"><br><br>
-				<label for ="difficulty">Difficulty</label><br>
-				<input type="text" name="difficulty"><br><br>
-				<label for="date">Date</label><br>
-				<input type="date" name="date"><br><br>
-				<input type="submit" name="Add" value="Add" class="button"><br><br>
-			</form>
 		</div>
 	</div>
 </div>

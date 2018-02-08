@@ -28,6 +28,9 @@
                 if(this.responseText!=''){
                     document.getElementById('submit').disabled = true;
                 }
+                else{
+                    document.getElementById('submit').disabled = false;
+                }
             }
         };
         xhttp.open("GET", "/userName/?u="+userIn.value+"&e="+eventIn.value, true);

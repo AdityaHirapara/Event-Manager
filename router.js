@@ -3,6 +3,9 @@ const Authentication = require('./authentication');
 const appRouter = express.Router();
 const committeeRouter = express.Router();
 const workRouter = express.Router();
+const profileRouter = express.Router();
+const boardRouter = express.Router();
+const addRouter = express.Router();
 const Committee = require('./controllers/committee');
 const Render = require('./controllers/render');
 appRouter.get('/',(req,res) => {
@@ -37,10 +40,12 @@ appRouter.get('/eventName',Authentication.eventVal);
 appRouter.get('/userName',Authentication.userVal);
 appRouter.get('/search',Authentication.assignee);
 appRouter.get('/committeeName',Authentication.committeeVal);
-appRouter.get('/:leaderboard',Render.leaderboard);
 appRouter.post('/propose',Committee.propose);
 appRouter.post('/close',Committee.close);
 appRouter.post('/delete',Committee.deleteWork);
+
+appRouter.post('/deleteEvent',Authentication.deleteEvent);
+appRouter.post('/deleteCommittee',Authentication.deleteCommittee);
 
 appRouter.use('/committee',committeeRouter);
 committeeRouter.use(express.static(__dirname + '/public'));
@@ -58,10 +63,33 @@ committeeRouter.get('/:name',(req,res) =>{
 	}
 });
 
+appRouter.use('/leaderboard',boardRouter);
+boardRouter.use(express.static(__dirname + '/public'));
+boardRouter.get('/:leaderboard',Render.leaderboard);
+
+appRouter.use('/add',addRouter);
+addRouter.use(express.static(__dirname + '/public'));
+addRouter.get('/:name',Committee.assignwork);
+
+appRouter.post('/response',Committee.response);
+appRouter.get('/help',(req,res)=>{
+	res.render('help');
+});
+appRouter.get('/developers',(req,res)=>{
+	res.render('developers');
+});
+appRouter.get('/feedback',(req,res)=>{
+	res.render('feedback');
+});
+
 committeeRouter.use('/:name',workRouter);
 workRouter.use(express.static(__dirname + '/public'));
 workRouter.get('/allWork',Render.allWork);
 workRouter.get('/closedWork',Render.closedWork);
 workRouter.get('/proposedWork',Render.proposedWork);
+
+appRouter.use('/profile',profileRouter);
+profileRouter.use(express.static(__dirname + '/public'));
+profileRouter.get('/:committeeName',Render.profile);
 
 module.exports = appRouter;

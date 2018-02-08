@@ -20,7 +20,7 @@ exports.invite = function(req,res){
 		service : 'gmail',
 		auth: {
 			user: 'adityahirapara2016@gmail.com',
-			pass: 'password'
+			pass: 'froggone'
 		},
 		tls: {
         	rejectUnauthorized: false
@@ -37,12 +37,21 @@ exports.invite = function(req,res){
 	sender.sendMail(mail,(error,msg) => {
 		if(error){
 			console.log(error);
+			sender.close();
 		}
 		else {
 			console.log('Success: ' + msg.response);
+			sender.close();
 		}
 	});
 	res.redirect('/main');
+}
+
+exports.assignwork = function(req,res){
+	var committee = req.params.name;
+	res.render('add',{
+		committeeName:committee
+	});
 }
 
 exports.addwork = function(req,res){
@@ -53,7 +62,7 @@ exports.addwork = function(req,res){
 	const difficulty = req.body.difficulty;
 	const tName2 = req.session.user.event + '_work';
     // console.log("the value id"+tName2);
-	let que = `INSERT INTO ${tName2}(heading,description,committee,assignee,difficulty,created) VALUES('${work}',"${description}",'${committee}','${assignee_name}','${difficulty}',CURDATE())`;
+	let que = `INSERT INTO ${tName2}(heading,description,committee,assignee,difficulty,created) VALUES('${work}',"${description}",'${committee}','${assignee_name}','${difficulty}',NOW())`;
 	con.query(que,(qerr,qres)=>{
 		if(qerr)
 		console.log(qerr);
@@ -96,7 +105,7 @@ exports.close = function(req,res){
 				console.log(err);
 			if(results[0].difficulty.toLowerCase() == 'easy')
 				que1 = `UPDATE ${event} SET points = points+1 WHERE name = '${results[0].assignee}'`;
-			else if(results[0].difficulty.toLowerCase() == 'medium')
+			else if(results[0].difficulty.toLowerCase() == 'average')
 				que1 = `UPDATE ${event} SET points = points+2 WHERE name = '${results[0].assignee}'`;
 			else if(results[0].difficulty.toLowerCase() == 'hard')
 				que1 = `UPDATE ${event} SET points = points+3 WHERE name = '${results[0].assignee}'`;
@@ -121,6 +130,15 @@ exports.close = function(req,res){
 			res.redirect('/committee/'+committee+'/proposedWork');
 		});
 	}
+	else if(req.body.reopen){
+		const assignee = req.body.assignee;
+		que = `UPDATE ${event}_work SET proposed=0 WHERE heading = '${work}' AND committee = '${committee}'`;
+		con.query(que,(qerr,qres)=>{
+			if(qerr)
+				console.log(qerr);
+			res.redirect('/committee/'+committee+'/proposedWork');
+		});
+	}
 }
 
 exports.deleteWork = function(req,res){
@@ -133,4 +151,36 @@ exports.deleteWork = function(req,res){
 			console.log(qerr);
 		res.redirect('/committee/'+committee+'/allWork');
 	});
+}
+
+exports.response = function(req,res){
+	var sender = mailer.createTransport({
+		service : 'gmail',
+		auth: {
+			user: 'adityahirapara2016@gmail.com',
+			pass: 'froggone'
+		},
+		tls: {
+        	rejectUnauthorized: false
+    	}
+	});
+	let url = ` ${req.body.response}`;
+	var mail = {
+		from : 'adityahirapara2016@gmail.com',
+		to : 'adityahirapara2016@gmail.com',
+		subject : `Response`,
+		text : `User response : ${url}`
+	};
+
+	sender.sendMail(mail,(error,msg) => {
+		if(error){
+			console.log(error);
+			sender.close();
+		}
+		else {
+			console.log('Success: ' + msg.response);
+			sender.close();
+		}
+	});
+	res.redirect('/feedback');
 }

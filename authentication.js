@@ -27,7 +27,7 @@ exports.create = function (req,res) {
 			console.log(qerr);
 		}
 	});
-	que = `CREATE TABLE ${event}_work(heading varchar(100) NOT NULL UNIQUE,description varchar(200),committee varchar(20) NOT NULL ,assignee varchar(30),difficulty varchar(10) NOT NULL,created DATE,complete boolean NOT NULL DEFAULT 0,proposed INT(2) NOT NULL DEFAULT 0)`;
+	que = `CREATE TABLE ${event}_work(heading varchar(100) NOT NULL UNIQUE,description varchar(200),committee varchar(20) NOT NULL ,assignee varchar(30),difficulty varchar(10) NOT NULL,created DATETIME,complete boolean NOT NULL DEFAULT 0,proposed INT(2) NOT NULL DEFAULT 0)`;
 	con.query(que,function(qerr,qres){
 		if(qerr){
 			console.log(qerr);
@@ -97,7 +97,7 @@ exports.signup = function(req,res){
 			});
 		});
 	});
-	console.log(event);
+	// console.log(event);
 } 
 exports.login = function(req,res){
 	var event = req.body.event; 
@@ -113,6 +113,7 @@ exports.login = function(req,res){
 	con.query(que,[email], function (error, results, fields) {
 	if (error) {
 	    console.log(error);
+	    res.redirect('/login');
 	}
 	else{
 		if(results.length >0){
@@ -137,15 +138,15 @@ exports.login = function(req,res){
 			res.redirect('/login?err=Enter valid Email');
 		}
 	}
-	console.log("Success");
+	// console.log("Success");
 	});
 }
 
 exports.logout = function(req,res){
 	req.session.destroy();
-	console.log(req.session);
+	// console.log(req.session);
 	res.redirect('/log');
-	console.log('Logged out');
+	// console.log('Logged out');
 }
 
 exports.eventVal = function(req,res){
@@ -222,4 +223,55 @@ exports.assignee = function(req,res){
 		});
 		res.send(response);
 	});
+}
+
+exports.deleteEvent = function(req,res){
+	if(req.session.user.event == req.body.event){
+		let event = req.session.user.event;
+		let que = `DROP TABLE IF EXISTS ${event},${event}_committee,${event}_work`;
+		con.query(que,function(err,results,fields){
+			if(err){
+				console.log(err);
+			}
+			que = `DELETE FROM events WHERE name='${event}'`;
+			con.query(que,function(err,results,fields){
+				if(err){
+					console.log(err);
+				}
+				res.redirect('/logout');
+			});
+		});
+	}
+	else{
+		res.redirect('/main');
+	}
+}
+
+exports.deleteCommittee = function(req,res){
+	if(req.session.user && req.session.user.committee == 'head'){
+		let event = req.session.user.event;
+		let committee = req.body.committee;
+		let que = `DELETE FROM ${event} WHERE committee='${committee}'`;
+		con.query(que,function(err,results,fields){
+			if(err){
+				console.log(err);
+			}
+		});
+		que = `DELETE FROM ${event}_committee WHERE committee_name='${committee}'`;
+		con.query(que,function(err,results,fields){
+			if(err){
+				console.log(err);
+			}
+		});
+		que = `DELETE FROM ${event}_work WHERE committee='${committee}'`;
+		con.query(que,function(err,results,fields){
+			if(err){
+				console.log(err);
+			}
+			res.redirect('/main');
+		});
+	}
+	else{
+		req.redirect('/logout');
+	}
 }
